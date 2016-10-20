@@ -3,16 +3,56 @@
 
 $(document).ready(function() {
   //ALL CODE GOES IN HERE
-  $('#newTaskForm').hide();
-
   var listo = [];
 
   var Task = function(task) {
     this.task = task;
     this.id = 'new';
-}
+  }
 
-var addTask = function(task) {
+  $('#newTaskForm').hide();
+
+  var advanceTask = function(task) {
+  var modified = task.innerText.trim()
+  for (var i = 0; i < listo.length; i++) {
+    if (listo[i].task === modified) {
+      if (listo[i].id === 'new') {
+        listo[i].id = 'inProgress';
+      } else if (listo[i].id === 'inProgress') {
+        listo[i].id = 'archived';
+      } else {
+        listo.splice(i, 1);
+      }
+      break;
+      }
+    }
+    task.remove();
+  };
+
+  $(document).on('click', '#item', function(e) {
+      e.preventDefault();
+    var task = this;
+    advanceTask(task);
+    this.id = 'inProgress';
+    $('#currentList').append(this.outerHTML);
+  });
+
+  $(document).on('click', '#inProgress', function (e) {
+    e.preventDefault();
+    var task = this;
+    task.id = "archived";
+    var changeIcon = task.outerHTML.replace('glyphicon-arrow-right', 'glyphicon-remove');
+    advanceTask(task);
+    $('#archivedList').append(changeIcon);
+  });
+
+  $(document).on('click', '#archived', function (e) {
+    e.preventDefault();
+    var task = this;
+    advanceTask(task);
+  });
+
+  var addTask = function(task) {
     if(task) {
         task = new Task(task);
         listo.push(task);
@@ -31,22 +71,22 @@ var addTask = function(task) {
 
     }
     $('#newTaskForm').slideToggle('fast', 'linear');
-};
+  };
 
-$('#saveNewItem').on('click', function (e) {
+  $('#saveNewItem').on('click', function (e) {
     e.preventDefault();
     var task = $('#newItemInput').val().trim();
     addTask(task);
-});
+  });
 
 //Opens form
-$('#add-todo').on('click', function () {
+  $('#add-todo').on('click', function () {
     $('#newTaskForm').fadeToggle('fast', 'linear');
-});
+  });
 //closes form
-$('#cancel').on('click', function (e) {
+  $('#cancel').on('click', function (e) {
     e.preventDefault();
     $('#newTaskForm').fadeToggle('fast', 'linear');
-});
+  });
 
 });
